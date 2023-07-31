@@ -35,8 +35,6 @@ HOST, vali.cp31.ott.cibntv.net, REJECT
 IP-CIDR, 117.161.156.227/32, REJECT
 # 彩云天气
 HOST, ad.cyapi.cn, REJECT
-# 昌原云充
-HOST-SUFFIX, adyounger.com, REJECT
 # ChatGPT
 HOST, o33249.ingest.sentry.io, REJECT
 # Clue 智库
