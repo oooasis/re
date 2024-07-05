@@ -5,7 +5,7 @@ host-suffix, whatshub.top, proxy
 host-suffix, v2ex.com, proxy
 host-suffix, bilin.eu.org, proxy
 host-suffix, yppan.com, proxy
-host-suffix, i.ytimg.com, proxy
+host-suffix, ytimg.com, proxy
 host-suffix, youtube.com, proxy
 host, apic.musixmatch.com, proxy
 # (D.C.S.G?)
