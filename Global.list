@@ -1,5 +1,6 @@
 # https://github.com/DivineEngine/Profiles/blob/master/Quantumult/Filter/Global.list
 # 2024-02-04 10:25
+DOMAIN,gateway.icloud.com
 host-suffix, whatshub.top, proxy
 host-suffix, v2ex.com, proxy
 host-suffix, bilin.eu.org, proxy
