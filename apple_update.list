@@ -8,5 +8,6 @@
 #!update=2024-06-01 23:15:00
 #############################################
 
-DOMAIN,gdmf.apple.com
-DOMAIN,xp.apple.com
+DOMAIN,gdmf.apple.com,reject
+DOMAIN,xp.apple.com,reject
+host-suffix,apple.com,direct
