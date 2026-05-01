@@ -9,5 +9,5 @@
 #############################################
 
 DOMAIN,gdmf.apple.com,reject
-DOMAIN,xp.apple.com,reject
+#DOMAIN,xp.apple.com,reject
 host-suffix,apple.com,direct
