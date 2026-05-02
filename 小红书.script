@@ -1,27 +1,37 @@
-#!name=小红书-精简低开销版
-#!desc=去广告 + 保留推荐流（原生 jq 版，无 JS 零开销）
-#!author=优化版
-#!date=2026-05-01
+#!name=小红书
+#!desc=某些APP要清除缓存或者重新安装拦截广告才会生效！
+#!author=奶思
+#!homepage=https://github.com/fmz200/wool_scripts
+#!icon=https://raw.githubusercontent.com/fmz200/wool_scripts/main/icons/gif/naisi-01.gif
+#!raw-url=https://github.com/fmz200/wool_scripts/raw/main/Loon/plugin/split/partX/Xiaohongshu.lpx
+#!tg-channel=https://t.me/inaisi
+#!date=
+#############################################
 
 [Rule]
-# 广告域名（走规则引擎直接 REJECT，几乎 0 开销）
 DOMAIN, ads-img-qc.xhscdn.com, REJECT
 DOMAIN, ads-video-al.xhscdn.com, REJECT
 DOMAIN, ads-video-qc.xhscdn.com, REJECT
 DOMAIN, t-ads.xiaohongshu.com, REJECT
+AND, ((PROTOCOL, QUIC), (DOMAIN-SUFFIX, xiaohongshu.com)), REJECT
+
 
 [Rewrite]
-# 弹窗 / 广告接口 (直接拦截并返回空字典，极低开销)
-^https?:\/\/edith\.xiaohongshu\.com\/api\/sns\/v\d+\/surprisebox\/(get_style|open|submit_action) reject-dict
+# 惊喜弹窗
+^https:\/\/edith\.xiaohongshu\.com\/api\/sns\/v1\/surprisebox\/(?:get_style|open|submit_action) reject-dict
+^https?:\/\/www\.xiaohongshu\.com\/api\/marketing\/box\/trigger\? reject-dict
+# 信息流
 ^https?:\/\/edith\.xiaohongshu\.com\/api\/sns\/v\d+\/note\/guide\? reject-dict
+^https?:\/\/edith\.xiaohongshu\.com\/api\/sns\/v\d+\/note\/detailfeed\/preload\? reject-dict
 ^https?:\/\/edith\.xiaohongshu\.com\/api\/sns\/v\d+\/guide\/user_banner reject-dict
-
-# 水印拦截
+^https?:\/\/www\.xiaohongshu\.com\/api\/sns\/(v\d+\/ads\/resource|v\d+\/hey\/\w+\/hey_gallery) reject-dict
+# 评论区图片水印
 ^https?:\/\/ci\.xiaohongshu\.com\/system_config\/watermark reject-img
+^https:\/\/rec\.xiaohongshu\.com\/api\/sns\/v\d+\/homefeed url jsonjq-response-body .data |= map(select(.type == "normal"))
 
-# 搜索 & 推荐流 (直接调用 Loon 的原生 jq 支持，完美平替 QX 的 jsonjq)
-^https:\/\/rec\.xiaohongshu\.com\/api\/sns\/v\d+\/homefeed response-body-jq '.data |= map(select(.type == "normal"))'
 
-[MitM]
-# 精确 MITM
-hostname = edith.xiaohongshu.com, rec.xiaohongshu.com, ci.xiaohongshu.com
+
+
+
+[MITM]
+hostname = edith.xiaohongshu.com, ci.xiaohongshu.com, rec.xiaohongshu.com, so.xiaohongshu.com
