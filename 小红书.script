@@ -27,11 +27,11 @@ AND, ((PROTOCOL, QUIC), (DOMAIN-SUFFIX, xiaohongshu.com)), REJECT
 ^https?:\/\/www\.xiaohongshu\.com\/api\/sns\/(v\d+\/ads\/resource|v\d+\/hey\/\w+\/hey_gallery) reject-dict
 # 评论区图片水印
 ^https?:\/\/ci\.xiaohongshu\.com\/system_config\/watermark reject-img
-^https:\/\/rec\.xiaohongshu\.com\/api\/sns\/v\d+\/homefeed response-body-json-jq '.data |= map(select(.type == "normal"))'
+^https:\/\/[a-z]+\.xiaohongshu\.com\/api\/sns\/v\d+\/(homefeed|localfeed) response-body-json-jq '.data |= map(select(.type == "normal"))'
 
 
 
 
 
 [MITM]
-hostname = edith.xiaohongshu.com, ci.xiaohongshu.com, rec.xiaohongshu.com, so.xiaohongshu.com
+hostname = *.xiaohongshu.com
