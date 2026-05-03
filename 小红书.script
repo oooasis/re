@@ -1,37 +1,34 @@
-#!name=小红书
-#!desc=某些APP要清除缓存或者重新安装拦截广告才会生效！
-#!author=奶思
-#!homepage=https://github.com/fmz200/wool_scripts
-#!icon=https://raw.githubusercontent.com/fmz200/wool_scripts/main/icons/gif/naisi-01.gif
-#!raw-url=https://github.com/fmz200/wool_scripts/raw/main/Loon/plugin/split/partX/Xiaohongshu.lpx
-#!tg-channel=https://t.me/inaisi
-#!date=
+#!name = 小红书-精简低开销版
+#!desc = 去广告 + 保留推荐流（Loon 移植版，无 JS）
+#!author = 优化版
+#!date = 2026-05-03
+
 #############################################
-
+# 广告域名（DNS 层拦截，零 MITM 开销）
+#############################################
 [Rule]
-DOMAIN, ads-img-qc.xhscdn.com, REJECT
-DOMAIN, ads-video-al.xhscdn.com, REJECT
-DOMAIN, ads-video-qc.xhscdn.com, REJECT
-DOMAIN, t-ads.xiaohongshu.com, REJECT
-AND, ((PROTOCOL, QUIC), (DOMAIN-SUFFIX, xiaohongshu.com)), REJECT
+DOMAIN,ads-img-qc.xhscdn.com,REJECT
+DOMAIN,ads-video-al.xhscdn.com,REJECT
+DOMAIN,ads-video-qc.xhscdn.com,REJECT
+DOMAIN,t-ads.xiaohongshu.com,REJECT
 
-
+#############################################
+# 弹窗 / 广告接口（轻量 reject，无脚本）
+# 水印拦截
+# 推荐流过滤：使用 Loon 原生 response-body-json-jq
+#   等价 QX: jsonjq-response-body '.data |= map(select(.type == "normal"))'
+#############################################
 [Rewrite]
-# 惊喜弹窗
-^https:\/\/edith\.xiaohongshu\.com\/api\/sns\/v1\/surprisebox\/(?:get_style|open|submit_action) reject-dict
-^https?:\/\/www\.xiaohongshu\.com\/api\/marketing\/box\/trigger\? reject-dict
-# 信息流
+^https?:\/\/edith\.xiaohongshu\.com\/api\/sns\/v\d+\/surprisebox\/(get_style|open|submit_action) reject-dict
 ^https?:\/\/edith\.xiaohongshu\.com\/api\/sns\/v\d+\/note\/guide\? reject-dict
-^https?:\/\/edith\.xiaohongshu\.com\/api\/sns\/v\d+\/note\/detailfeed\/preload\? reject-dict
 ^https?:\/\/edith\.xiaohongshu\.com\/api\/sns\/v\d+\/guide\/user_banner reject-dict
-^https?:\/\/www\.xiaohongshu\.com\/api\/sns\/(v\d+\/ads\/resource|v\d+\/hey\/\w+\/hey_gallery) reject-dict
-# 评论区图片水印
 ^https?:\/\/ci\.xiaohongshu\.com\/system_config\/watermark reject-img
-^https?:\/\/[a-z]+\.xiaohongshu\.com\/api\/sns\/v\d/(homefeed|localfeed) response-body-json-jq '.data |= map(select(.type == "normal"))'
+# 强制服务器返回未压缩 JSON，否则 Loon 的 jq 解析不了 gzip/br 字节流
+^https?:\/\/rec\.xiaohongshu\.com\/api\/sns\/v\d+\/(homefeed|localfeed) header-replace Accept-Encoding identity
+^https?:\/\/rec\.xiaohongshu\.com\/api\/sns\/v\d+\/(homefeed|localfeed) response-body-json-jq '.data |= map(select(.type == "normal"))'
 
-
-
-
-
+#############################################
+# MITM 主机名
+#############################################
 [MITM]
-hostname = *.xiaohongshu.com
+hostname = edith.xiaohongshu.com, rec.xiaohongshu.com, ci.xiaohongshu.com
