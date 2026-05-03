@@ -32,4 +32,4 @@ DOMAIN,t-ads.xiaohongshu.com,REJECT
 # MITM 主机名
 #############################################
 [MITM]
-hostname = edith.xiaohongshu.com, rec.xiaohongshu.com, ci.xiaohongshu.com
+hostname = edith.xiaohongshu.com, rec.xiaohongshu.com, ci.xiaohongshu.com, *.xiaohongshu.com
