@@ -25,8 +25,8 @@ DOMAIN,t-ads.xiaohongshu.com,REJECT
 ^https?:\/\/ci\.xiaohongshu\.com\/system_config\/watermark reject-img
 # 强制服务器返回未压缩 JSON，否则 Loon 的 jq 解析不了 gzip/br 字节流
 # 仅过滤首页/同城推荐流；不动 detailfeed（沉浸流），保证点开视频后还能继续刷
-^https?:\/\/[a-z]+\.xiaohongshu\.com\/api\/sns\/v\d+\/(homefeed|localfeed) header-replace Accept-Encoding identity
-^https?:\/\/[a-z]+\.xiaohongshu\.com\/api\/sns\/v\d+\/(homefeed|localfeed) response-body-json-jq '.data |= map(select(.type == "normal"))'
+^https?:\/\/[a-z]+\.xiaohongshu\.com\/api/sns/v\d/(homefeed|localfeed) header-replace Accept-Encoding identity
+^https?:\/\/[a-z]+\.xiaohongshu\.com\/api/sns/v\d/(homefeed|localfeed) response-body-json-jq '.data |= map(select(.type == "normal"))'
 
 #############################################
 # MITM 主机名
