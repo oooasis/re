@@ -1,0 +1,12 @@
+#!name= iRingo: WeatherKit Rewrite
+#!desc=iOS 18 / macOS 15 / watchOS 11 WeatherKit Rewrite
+#!homepage=https://NSRingo.github.io/guide/Weather/weather-kit
+
+host, weather-analytics-events.apple.com, reject
+host-suffix, tthr.apple.com, reject
+host, tether.edge.apple, reject
+
+^https?:\/\/weatherkit\.apple\.com\/api\/v1\/availability\/(.*) url 307 https://weatherkit.nanocat.cloud/api/v1/availability/$1
+^https?:\/\/weatherkit\.apple\.com\/api\/v2\/weather\/(.*) url 307 https://weatherkit.nanocat.cloud/api/v2/weather/$1
+
+hostname = weatherkit.apple.com
