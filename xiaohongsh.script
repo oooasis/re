@@ -13,11 +13,9 @@ AND,((PROTOCOL,UDP),(DEST-PORT,443)),REJECT-DROP
 AND,((PROTOCOL,QUIC),(DOMAIN-SUFFIX,xiaohongshu.com)),REJECT-DROP
 AND,((PROTOCOL,QUIC),(DOMAIN-SUFFIX,xhscdn.com)),REJECT-DROP
 
-[rewrite]
+[Rewrite]
 ^https:\/\/rec\.xiaohongshu\.com\/api\/sns\/v\d+\/(homefeed|localfeed)(\?|$) response-body-json-jq '.data|=map(select(.type=="normal"))'
 ^https:\/\/(so|search)\.xiaohongshu\.com\/api\/sns\/v\d+\/search\/notes(\?|$) response-body-json-jq '.data.items|=map(select(.note.type=="normal"))'
-#############################################
-# MITM 主机名
-#############################################
+
 [MITM]
-hostname = edith.xiaohongshu.com, rec.xiaohongshu.com, ci.xiaohongshu.com, *.xiaohongshu.com
+hostname = rec.xiaohongshu.com, so.xiaohongshu.com, search.xiaohongshu.com
