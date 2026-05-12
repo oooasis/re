@@ -12,15 +12,9 @@ DOMAIN,t-ads.xiaohongshu.com,REJECT
 AND,((PROTOCOL,QUIC),(DOMAIN-SUFFIX,xiaohongshu.com)),REJECT-DROP
 AND,((PROTOCOL,QUIC),(DOMAIN-SUFFIX,xhscdn.com)),REJECT-DROP
 
-
-[Rewrite]
-^https?:\/\/edith\.xiaohongshu\.com\/api\/sns\/v\d+\/surprisebox\/(get_style|open|submit_action) reject-dict
-^https?:\/\/edith\.xiaohongshu\.com\/api\/sns\/v\d+\/note\/guide\? reject-dict
-^https?:\/\/edith\.xiaohongshu\.com\/api\/sns\/v\d+\/guide\/user_banner reject-dict
-^https?:\/\/ci\.xiaohongshu\.com\/system_config\/watermark reject-img
-^https?:\/\/[a-zA-Z0-9-]+\.xiaohongshu\.com\/api\/sns\/v\d+\/(homefeed|localfeed)(\?|$) response-body-json-jq '((.data|select(type=="array"))|=map(select(.type=="normal")))'
-^https?:\/\/(so|search)\.xiaohongshu\.com\/api\/sns\/v\d+\/search\/notes(\?|$) response-body-json-jq '((.data.items|select(type=="array"))|=map(select(.note.type=="normal")))'
-
+[rewrite]
+^https:\/\/rec\.xiaohongshu\.com\/api\/sns\/v\d+\/(homefeed|localfeed)(\?|$) response-body-json-jq '.data|=map(select(.type=="normal"))'
+^https:\/\/(so|search)\.xiaohongshu\.com\/api\/sns\/v\d+\/search\/notes(\?|$) response-body-json-jq '.data.items|=map(select(.note.type=="normal"))'
 #############################################
 # MITM 主机名
 #############################################
