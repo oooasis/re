@@ -1,5 +1,7 @@
 #!name = 小红书-精简低开销版
-
+#!desc = 去广告 + 保留推荐流（Loon 移植版，无 JS）
+#!author = 优化版
+#!date = 2026-05-03
 
 #############################################
 # 广告域名（DNS 层拦截，零 MITM 开销）
@@ -9,13 +11,17 @@ DOMAIN,ads-img-qc.xhscdn.com,REJECT
 DOMAIN,ads-video-al.xhscdn.com,REJECT
 DOMAIN,ads-video-qc.xhscdn.com,REJECT
 DOMAIN,t-ads.xiaohongshu.com,REJECT
-AND,((PROTOCOL,UDP),(DEST-PORT,443)),REJECT-DROP
-AND,((PROTOCOL,QUIC),(DOMAIN-SUFFIX,xiaohongshu.com)),REJECT-DROP
-AND,((PROTOCOL,QUIC),(DOMAIN-SUFFIX,xhscdn.com)),REJECT-DROP
+
 
 [Rewrite]
-^https:\/\/rec\.xiaohongshu\.com\/api\/sns\/v\d+\/(homefeed|localfeed)(\?|$) response-body-json-jq '.data|=map(select(.type=="normal"))'
-^https:\/\/(so|search)\.xiaohongshu\.com\/api\/sns\/v\d+\/search\/notes(\?|$) response-body-json-jq '.data.items|=map(select(.note.type=="normal"))'
+^https?:\/\/edith\.xiaohongshu\.com\/api\/sns\/v\d+\/surprisebox\/(get_style|open|submit_action) reject-dict
+^https?:\/\/edith\.xiaohongshu\.com\/api\/sns\/v\d+\/note\/guide\? reject-dict
+^https?:\/\/edith\.xiaohongshu\.com\/api\/sns\/v\d+\/guide\/user_banner reject-dict
+^https?:\/\/ci\.xiaohongshu\.com\/system_config\/watermark reject-img
 
+
+#############################################
+# MITM 主机名
+#############################################
 [MITM]
-hostname = rec.xiaohongshu.com, so.xiaohongshu.com, search.xiaohongshu.com
+hostname = edith.xiaohongshu.com, ci.xiaohongshu.com
