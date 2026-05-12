@@ -18,7 +18,7 @@ DOMAIN,t-ads.xiaohongshu.com,REJECT
 ^https?:\/\/edith\.xiaohongshu\.com\/api\/sns\/v\d+\/note\/guide\? reject-dict
 ^https?:\/\/edith\.xiaohongshu\.com\/api\/sns\/v\d+\/guide\/user_banner reject-dict
 ^https?:\/\/ci\.xiaohongshu\.com\/system_config\/watermark reject-img
-^https?:\/\/[a-z]+\.xiaohongshu\.com\/api\/sns\/v\d+\/(homefeed|localfeed) response-body-json-jq '.data|=map(select(.type=="normal"))'
+^https?:\/\/[a-zA-Z0-9-]+\.xiaohongshu\.com\/api\/sns\/v\d+\/(homefeed|localfeed) response-body-json-jq '((.data|select(type=="array"))|=map(select(.type=="normal")))'
 
 #############################################
 # MITM 主机名
