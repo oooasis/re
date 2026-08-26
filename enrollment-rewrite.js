@@ -1,4 +1,4 @@
-// Quantumult X：将学籍测试响应改写为“本科 / 在籍”
+// Quantumult X：改写学籍测试响应中的层次、状态和班级
 // 仅修改客户端收到的响应，不会向服务端写入数据。
 
 let body = $response.body || "";
@@ -24,10 +24,11 @@ try {
 
     body = JSON.stringify(data);
   } else {
-    // 学籍详情由服务端把 resultJson 嵌入 HTML；替换其中的层次和学籍状态。
+    // 学籍详情由服务端把 resultJson 嵌入 HTML；替换其中的层次、状态和班级。
     body = body
       .replace(/("cc"\s*:\s*)"[^"]*"/g, '$1"本科"')
-      .replace(/("xjzt"\s*:\s*)"[^"]*"/g, '$1"在籍"');
+      .replace(/("xjzt"\s*:\s*)"[^"]*"/g, '$1"在籍"')
+      .replace(/("bh"\s*:\s*)"[^"]*"/g, '$1"软件工程2024"');
   }
 } catch (error) {
   console.log("enrollment rewrite error: " + error);
