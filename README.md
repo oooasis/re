@@ -39,12 +39,6 @@ https://raw.githubusercontent.com/oooasis/re/refs/heads/main/<文件名>
 | `adr.conf` / `adrr.conf` / `adv.txt` | 去广告合集 |
 | `proxy.conf` | DOMAIN-KEYWORD 分流列表 |
 
-## 已失效
-
-| 文件 | 说明 |
-|---|---|
-| `xiaohongsh.conf` | 小红书早期版，实测不生效，已被 `xhs.conf` 取代 |
-
 ## 清理记录
 
 2026-08-27 删除：
@@ -54,5 +48,10 @@ https://raw.githubusercontent.com/oooasis/re/refs/heads/main/<文件名>
 - `weatherkit` —— 307 版，指向 `weatherkit.nanocat.cloud`，同样是 307 的死路
 - `AB-alias-host-nojs.TEST.conf` —— DNS alias + Host 改写，实测 Cloudflare 拒绝 Apple SNI，未采用
 - `lenke.js` —— 含已过期（2025-10-31）的阿里云 AccessKey / SecurityToken
+- `xiaohongsh.conf` —— 小红书早期版，实测不生效，已被 `xhs.conf` 取代
 
-> `lenke.js` 的凭证仍保留在 git 历史中。要彻底清除需改写历史。
+已用 `git filter-branch --index-filter` 把 `lenke.js` 从全部 131 个提交中抹除并强制推送，
+该文件不再存在于任何提交。全部提交 SHA 因此已改变。
+
+> GitHub 侧可能仍能通过旧 SHA 短期访问已解引用的对象。凭证已于 2025-10-31 过期；
+> 若该密钥属于自有阿里云账号，仍建议在控制台确认已吊销。
