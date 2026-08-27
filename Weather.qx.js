@@ -1,3 +1,14 @@
+/**
+ * iRingo WeatherKit (Rewrite) —— Quantumult X 版
+ *
+ * QX 没有 Surge/Loon 的 header 内部改写类型，改用 script-echo-response：
+ * QX 不去连 Apple，由脚本带着原始请求头（含 Authorization: Bearer <JWT>）
+ * 向 weatherkit.pages.dev 取回响应字节原样返回。
+ *
+ * 与上游 Rewrite 版行为一致：端点不可用时不回落 Apple。
+ * 完整背景见同目录 README.md。
+ */
+
 const ENDPOINT = "https://weatherkit.pages.dev";
 const ORIGIN_RE = /^https?:\/\/weatherkit\.apple\.com/i;
 const REASON = { 200: "OK", 400: "Bad Request", 401: "Unauthorized", 403: "Forbidden",
