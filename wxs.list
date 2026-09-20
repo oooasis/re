@@ -1,0 +1,8 @@
+# 微信视频号媒体主机
+# wxa   组件 UI 素材（interstitial_close_button、new_audio_icon、xmark_black 等）
+# wximg 封面图与广告创意
+# wxsmw 视频与广告视频
+# 分流层拦截，零解密。启用后 kbs.conf 里的 wxsmw 重写规则及其 MITM 可一并去掉。
+host, wxa.wxs.qq.com, reject
+host, wximg.wxs.qq.com, reject
+host, wxsmw.wxs.qq.com, reject
