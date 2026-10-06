@@ -1,0 +1,12 @@
+#!name= 小红书 𝕏
+#!desc= 小红书去除视频
+#!author=🌲
+#!icon= https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/RedPaper.png
+
+
+[Rewrite]
+^https:\/\/rec\.xiaohongshu\.com\/api\/sns\/v\d+\/homefeed response-body-json-jq '.data |= map(select(.type == "normal"))'
+
+
+[MitM]
+hostname = *.xiaohongshu.com
