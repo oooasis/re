@@ -7,4 +7,4 @@
 ^https:\/\/rec\.xiaohongshu\.com\/api\/sns\/v\d+\/homefeed response-body-json-jq '.data |= map(select(.type == "normal"))'
 
 [MitM]
-hostname = rec.xiaohongshu.com
+hostname = *.xiaohongshu.com
