@@ -21,8 +21,9 @@ https://raw.githubusercontent.com/oooasis/re/refs/heads/main/<文件名>
 | `ChinaMobile.qx.conf` | 中国移动 去开屏广告 | 取自 Loon `ChinaMobile.lpx` 的 `[Rewrite]` 段，正则逐字未改；MITM 2 台 |
 | `xhs.conf` | 小红书 去首页视频（排除法） | 通配符 + 排除 9 台，与显式 6 台等价 |
 | `spotfiy.conf` | Spotify 改写 | 文件名有拼写错误，因可能已被引用故未改名 |
-| `Spotify.plugin` | Spotify Loon 插件（spotfiy.conf 的 Loon 新语法版） | 依赖 `Spotify.Crack.Dev.modified.js`；需 Loon 3.5.1(983)+ |
-| `Spotify.Crack.Dev.modified.js` | Spotify protobuf 响应改写脚本 | 只改目标字段、其余字节原样保留；Loon 需 `binary_body_mode=true`，QX 读写 `bodyBytes` |
+| `Spotify.plugin` | Spotify Loon 插件 | 逻辑同 daozen/rules `module/spotify.conf`；依赖 `Spotify.proto.js`；需 Loon 3.5.1(983)+ |
+| `Spotify.proto.js` | 上面插件的 protobuf 改写脚本 | 改写结果与 daozen `spotify-proto.js` 一致，不加载 protobufjs（9 KB vs 87 KB），未知字段原样保留 |
+| `Spotify.Crack.Dev.modified.js` | `spotfiy.conf` 用的脚本 | |
 | `apple_ota.list` | 屏蔽系统更新推送 | 2 行 |
 
 ## 第三方资源的副本
