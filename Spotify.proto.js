@@ -19,6 +19,7 @@
   }
   const buf = raw instanceof Uint8Array ? raw : new Uint8Array(raw);
   let P = 0; // protobuf 读游标
+  let TXT = null; // 整包 latin1 文本，按需构建一次
 
   const now = Date.now();
   const expiry = new Date(now + 365 * 24 * 60 * 60 * 1000).toISOString();
@@ -83,7 +84,7 @@
     "ios-feature-audiobook-capping", "core-audiobook-sequence-provider-feature", "ios-feature-smartshuffle",
     "ios-feature-upsell",
   ]);
-  const KEYWORDS = ["upsell", "capping", "timecap", "limit", "restrict", "shuffle_eligible_toggle", "pick_and_shuffle", "premium_only", "reinventfree"];
+  const KEYWORDS = /upsell|capping|timecap|limit|restrict|shuffle_eligible_toggle|pick_and_shuffle|premium_only|reinventfree/i;
 
   let set = 0, removed = 0;
   try {
@@ -150,8 +151,7 @@
       set++;
       return lenField(3, rewrite(s, e, (f) => f === 3 || f === 4 || f === 5 ? null : undefined, () => [bytes(v)]));
     }
-    const path = (scope ? scope + "/" + name : name).toLowerCase();
-    if (REMOVE_SCOPES.has(scope) || REMOVE_NAMES.has(name) || KEYWORDS.some((k) => path.includes(k))) {
+    if (REMOVE_SCOPES.has(scope) || REMOVE_NAMES.has(name) || KEYWORDS.test(scope ? scope + "/" + name : name)) {
       removed++;
       return null;
     }
@@ -159,6 +159,8 @@
 
   // ---- protobuf 工具 ----
   function varint() {
+    if (P >= buf.length) throw Error("varint 越界");
+    if (buf[P] < 0x80) return buf[P++];
     let v = 0, m = 1, b;
     do {
       if (P >= buf.length) throw Error("varint 越界");
@@ -230,9 +232,12 @@
 
   // 键名、属性名均为 ASCII
   function str(s, e) {
-    let r = "";
-    for (let i = s; i < e; i++) r += String.fromCharCode(buf[i]);
-    return r;
+    if (TXT === null) {
+      const c = [];
+      for (let i = 0; i < buf.length; i += 8192) c.push(String.fromCharCode.apply(null, buf.subarray(i, i + 8192)));
+      TXT = c.join("");
+    }
+    return TXT.slice(s, e);
   }
 
   function vbytes(n) {
