@@ -1,14 +1,25 @@
-#!name = Soul 阅后即焚
-#!desc = 私聊阅后即焚照片推送通知，可预览、点开看原图
+#!name = Soul 私聊
+#!desc = 解除私聊限制；私聊阅后即焚照片推送通知，可预览、点开看原图；拦截广告域名
 #!author = 树先生
 #!icon = https://github.com/ishowshu/loon/raw/refs/heads/main/icon/soul.png
 #!loon_version = 3.5.1(983)
 
 # 实际部署: https://raw.githubusercontent.com/oooasis/re/refs/heads/main/soul.lpx
-# 上游: https://github.com/ishowshu/loon/blob/main/plugin/soul-new.lpx（只保留阅后即焚，去广告规则全部移除）
+# 上游: https://github.com/ishowshu/loon/blob/main/plugin/soul-new.lpx（保留私聊两项 + 广告域名拦截；IP 规则与复写去广告已移除）
+
+[Rule]
+# 官方广告
+DOMAIN,ssp.soulapp.cn,REJECT
+DOMAIN,soul-ad.soulapp.cn,REJECT
+DOMAIN,ad-r.soulapp.cn,REJECT
+# 第三方平台广告
+DOMAIN,ssp.1rtb.com,REJECT
+DOMAIN,impdsp.meituan.com,REJECT
+#DOMAIN,s3plus.meituan.net,REJECT
+DOMAIN,ssp.maplehaze.cn,REJECT
 
 [Script]
-response if ${url} ~= /^https:\/\/api-chat\.soulapp\.cn\/snapchat\/url/ && ${response.status} == 200 then script("https://raw.githubusercontent.com/oooasis/re/refs/heads/main/soul.snapchat.js") with tag="阅后即焚", timeout=10, requires_body=true
+response if ${url} ~= /^https:\/\/api-chat\.soulapp\.cn\/(?:chat\/limitInfo|snapchat\/url)/ && ${response.status} == 200 then script("https://raw.githubusercontent.com/oooasis/re/refs/heads/main/soul.chat.js") with tag="Soul 私聊", timeout=10, requires_body=true
 
 [Mitm]
 hostname = api-chat.soulapp.cn
