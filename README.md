@@ -25,7 +25,8 @@ https://raw.githubusercontent.com/oooasis/re/refs/heads/main/<文件名>
 | `Spotify.qx.conf` | Spotify QX 重写（`Spotify.plugin` 的 QX 版） | 依赖 `Spotify.proto.js`；改请求只用 `request-header` 正则，不跑脚本 |
 | `Spotify.proto.js` | 上面两者共用的 protobuf 改写脚本 | 改写结果与 daozen `spotify-proto.js` 一致，不加载 protobufjs（9 KB vs 87 KB），未知字段原样保留 |
 | `Spotify.Crack.Dev.modified.js` | `spotfiy.conf` 用的脚本 | |
-| `soul.lpx` | Soul 去广告 Loon 插件 | 修自 ishowshu/loon `soul-new.lpx`：QX 写法转 Loon、jq 判空、脚本统一 `soul.js` |
+| `soul.lpx` | Soul 私聊阅后即焚 Loon 插件 | 只 MITM `api-chat.soulapp.cn`；依赖 `soul.snapchat.js` |
+| `soul.snapchat.js` | 上面插件的脚本 | 取原图地址推通知，响应原样放行；Loon/QX 通用 |
 | `apple_ota.list` | 屏蔽系统更新推送 | 2 行 |
 
 ## 第三方资源的副本
