@@ -1,0 +1,23 @@
+# 说明：将可莉插件中心转换给 Quantumult X 使用; 插件中心 https://hub.kelee.one ; 请提前配置资源解析器。使用请遵循授权说明
+# 作者：iab0x00，感谢可莉及资源解析器
+# 修复 2026-11：kelee.one 已启用 Cloudflare UA 白名单，仅放行 Loon 客户端格式的 User-Agent
+#   （如 Loon/3.2.4 CFNetwork/1410.0.3 Darwin/22.6.0），QX 拉取 .lpx 一律 403。
+#   1) 新增 kelee.one 的 MitM 声明与 UA 伪装规则：QX 自身的资源更新请求同样经过隧道+MitM
+#      （与 Sub-Store 的 sub.store 自建端点同机制），UA 被改写为 Loon 格式后即可恢复下载，
+#      同时也修复直接订阅 kelee.one/Tool/Loon/Lpx/*.lpx 的 rewrite_remote 条目。
+#   2) if-none-match / User-Agent 匹配改为大小写不敏感：HTTP/2 下头部名为小写，
+#      原规则只匹配小写 if-none-match，可能因 304 空响应体短路整个转换。
+
+hostname = hub.kelee.one, kelee.one
+
+# 304 绕过：把协商头改为空 ETag，强制服务器返回完整 list.json（大小写不敏感）
+^https://hub\.kelee\.one/list\.json url request-header (\r\n)[Ii][Ff]-[Nn]one-[Mm]atch:.+(\r\n) request-header $1if-none-match: ""$2
+
+# 安装链接转换：loon://import → quantumult-x:///add-resource（经资源解析器转换 Loon 插件）
+^https://hub\.kelee\.one/list\.json url response-body loon://import\?plugin=(https://kelee\.one/Tool/Loon/Lpx/(.+)\.lpx) response-body quantumult-x:///add-resource?remote-resource=%7B%0A%20%20%20%20%22rewrite_remote%22%3A%20%5B%0A%20%20%20%20%20%20%20%20%22https%3A%2F%2Fkelee.one%2FTool%2FLoon%2FLpx%2F$2.lpx%2C%20opt-parser=true%2C%20enabled=true%2C%20tag%3D$2%22%0A%20%20%20%20%5D%0A%7D
+
+# UA 伪装（核心修复）：绕过 kelee.one 的 Cloudflare UA 白名单，QX 更新资源时同样生效
+^https://kelee\.one/Tool/Loon/Lpx/ url request-header (\r\n)[Uu]ser-[Aa]gent:.+(\r\n) request-header $1User-Agent: Loon/3.2.4 CFNetwork/1410.0.3 Darwin/22.6.0$2
+
+# 预防性 UA 伪装：防止 kelee 后续把 list.json 也纳入白名单
+^https://hub\.kelee\.one/list\.json url request-header (\r\n)[Uu]ser-[Aa]gent:.+(\r\n) request-header $1User-Agent: Loon/3.2.4 CFNetwork/1410.0.3 Darwin/22.6.0$2
