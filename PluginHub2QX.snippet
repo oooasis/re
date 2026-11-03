@@ -1,14 +1,6 @@
-# 说明：将可莉插件中心转换给 Quantumult X 使用; 插件中心 https://hub.kelee.one ; 请提前配置资源解析器。使用请遵循授权说明
-# 作者：iab0x00，感谢可莉及资源解析器
-# 修复 2026-11：kelee.one 已启用 Cloudflare UA 白名单，仅放行 Loon 客户端格式的 User-Agent
-#   （如 Loon/3.2.4 CFNetwork/1410.0.3 Darwin/22.6.0），QX 拉取 .lpx 一律 403。
-#   1) 新增 kelee.one 的 MitM 声明与 UA 伪装规则：QX 自身的资源更新请求同样经过隧道+MitM
-#      （与 Sub-Store 的 sub.store 自建端点同机制），UA 被改写为 Loon 格式后即可恢复下载，
-#      同时也修复直接订阅 kelee.one/Tool/Loon/Lpx/*.lpx 的 rewrite_remote 条目。
-#   2) if-none-match / User-Agent 匹配改为大小写不敏感：HTTP/2 下头部名为小写，
-#      原规则只匹配小写 if-none-match，可能因 304 空响应体短路整个转换。
+hostname = hub.kelee.one, kelee.one, loonlab.103516.xyz, loon.103516.xyz
 
-hostname = hub.kelee.one, kelee.one
+# ===== 可莉插件中心 =====
 
 # 304 绕过：把协商头改为空 ETag，强制服务器返回完整 list.json（大小写不敏感）
 ^https://hub\.kelee\.one/list\.json url request-header (\r\n)[Ii][Ff]-[Nn]one-[Mm]atch:.+(\r\n) request-header $1if-none-match: ""$2
@@ -21,3 +13,15 @@ hostname = hub.kelee.one, kelee.one
 
 # 预防性 UA 伪装：防止 kelee 后续把 list.json 也纳入白名单
 ^https://hub\.kelee\.one/list\.json url request-header (\r\n)[Uu]ser-[Aa]gent:.+(\r\n) request-header $1User-Agent: Loon/3.2.4 CFNetwork/1410.0.3 Darwin/22.6.0$2
+
+# ===== LoonLab 插件仓库 =====
+
+# 304 绕过：页面 HTML 带 ETag + must-revalidate，协商命中会返回空体导致脚本改写被跳过
+^https://loonlab\.103516\.xyz/Plugin/ url request-header (\r\n)[Ii][Ff]-[Nn]one-[Mm]atch:.+(\r\n) request-header $1if-none-match: ""$2
+
+# 内联脚本改写：把 loon:// 安装链接的构造替换为 quantumult-x:///add-resource（含反引号整体替换，
+# 替换串为纯字符串拼接，不含模板插值；pluginUrl / plugin.filename 为页面既有变量）
+^https://loonlab\.103516\.xyz/Plugin/ url response-body `loon://import\?plugin=\$\{encodedPluginUrl\}` response-body 'quantumult-x:///add-resource?remote-resource=' + encodeURIComponent(JSON.stringify({rewrite_remote:[pluginUrl + ", tag=" + plugin.filename + ", opt-parser=true, enabled=true"]}))
+
+# UA 伪装：loon.103516.xyz 的插件下载对非 Loon UA 返回 Telegram 推广页（HTTP 200 假内容）
+^https://loon\.103516\.xyz/Plugin/ url request-header (\r\n)[Uu]ser-[Aa]gent:.+(\r\n) request-header $1User-Agent: Loon/3.2.4 CFNetwork/1410.0.3 Darwin/22.6.0$2
