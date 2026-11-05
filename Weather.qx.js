@@ -6,13 +6,13 @@
  * 向 weatherkit.pages.dev 取回响应原样返回。
  *
  * 与上游 Rewrite 版行为一致：端点不可用时不回落 Apple。
+ * 每次执行只发起一次 fetch；网络失败直接结束，不自动重试。
  * 完整背景见同目录 README.md。
  */
 
 const ENDPOINT   = "https://weatherkit.pages.dev";
 const ORIGIN_RE  = /^https?:\/\/weatherkit\.apple\.com/i;
 const TIMEOUT_MS = 12000;   // 超时前给客户端一个干净的 504，避免脚本引擎超时报错
-const RETRY      = 1;       // 仅网络层失败重试一次；HTTP 4xx/5xx 不重试
 
 const REASON = { 200: "OK", 400: "Bad Request", 401: "Unauthorized", 403: "Forbidden",
                  404: "Not Found", 429: "Too Many Requests", 500: "Internal Server Error",
@@ -37,7 +37,12 @@ function fail(code, why) {
   if (!ORIGIN_RE.test(src)) return $done({});   // 防止 target 等于 src 造成自取
 
   let finished = false;
-  function finish(resp) { if (finished) return; finished = true; $done(resp); }
+  function finish(resp) {
+    if (finished) return;
+    finished = true;
+    clearTimeout(timer);
+    $done(resp);
+  }
 
   const req = {
     url: src.replace(ORIGIN_RE, ENDPOINT),
@@ -52,27 +57,20 @@ function fail(code, why) {
     finish(fail(504, "RELAY_TIMEOUT"));
   }, TIMEOUT_MS);
 
-  function attempt(left) {
-    $task.fetch(req).then(
-      function (r) {
-        clearTimeout(timer);
-        const code = (r && typeof r.statusCode === "number") ? r.statusCode : 502;
-        const out  = { status: status(code), headers: pick((r && r.headers) || {}, STRIP_RESP) };
-        if (r && r.bodyBytes) out.bodyBytes = r.bodyBytes;
-        else if (r && r.body) out.body = r.body;
-        finish(out);
-      },
-      function (reason) {
-        const msg = (reason && reason.error) ? reason.error : String(reason);   // 官方样例：reason.error
-        if (left > 0 && !finished) {
-          console.log("[WeatherKit.qx] retry after: " + msg);
-          return attempt(left - 1);
-        }
-        clearTimeout(timer);
-        console.log("[WeatherKit.qx] fetch failed: " + msg);
-        finish(fail(502, "RELAY_FAILED"));
-      }
-    );
-  }
-  attempt(RETRY);
+  $task.fetch(req).then(
+    function (r) {
+      if (finished) return;
+      const code = (r && typeof r.statusCode === "number") ? r.statusCode : 502;
+      const out  = { status: status(code), headers: pick((r && r.headers) || {}, STRIP_RESP) };
+      if (r && r.bodyBytes) out.bodyBytes = r.bodyBytes;
+      else if (r && r.body) out.body = r.body;
+      finish(out);
+    },
+    function (reason) {
+      if (finished) return;
+      const msg = (reason && reason.error) ? reason.error : String(reason);   // 官方样例：reason.error
+      console.log("[WeatherKit.qx] fetch failed: " + msg);
+      finish(fail(502, "RELAY_FAILED"));
+    }
+  );
 })();
